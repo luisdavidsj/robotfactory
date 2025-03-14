@@ -44,4 +44,19 @@ public class RobotService {
         }
         robotRepository.deleteById(id);
     }
+
+    public List<Robot> buscarPorTipo(String tipo) {
+        return robotRepository.findByTipo(tipo);
+    }
+
+    public List<Robot> buscarPorRangoDeFechas(Integer desde, Integer hasta) {
+        return robotRepository.findByAnioFabricacionBetween(desde, hasta);
+    }
+
+    public Robot cambiarEstado(Long id) {
+        return robotRepository.findById(id).map(robot -> {
+            robot.setEstadoActivo(!robot.getEstadoActivo()); // Cambia entre true y false
+            return robotRepository.save(robot);
+        }).orElseThrow(() -> new RuntimeException("Robot no encontrado"));
+    }
 }
