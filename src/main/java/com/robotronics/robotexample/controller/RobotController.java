@@ -10,6 +10,7 @@ import com.robotronics.robotexample.service.RobotService;
 
 import jakarta.validation.Valid;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,19 +25,13 @@ public class RobotController {
     }
 
     @PostMapping
-    public ResponseEntity<String> crearRobots(@Valid @RequestBody List<RobotDTO> robotsDTO) {
-        for (RobotDTO robotDTO : robotsDTO) {
-            // Convertimos DTO a entidad Robot
-            Robot nuevoRobot = new Robot();
-            nuevoRobot.setNombre(robotDTO.getNombre());
-            nuevoRobot.setTipo(robotDTO.getTipo());
-            nuevoRobot.setAnioFabricacion(robotDTO.getAnioFabricacion());
-
-            // Guardamos en la base de datos
-            robotService.crearRobot(nuevoRobot);
+    public ResponseEntity<?> crearRobots(@Valid @RequestBody List<RobotDTO> robotDTOs) {
+        try {
+            List<Robot> robotsCreados = robotService.crearRobots(robotDTOs);
+            return ResponseEntity.status(HttpStatus.CREATED).body(robotsCreados);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", e.getMessage()));
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("Robots creados con éxito");
     }
 
     @GetMapping

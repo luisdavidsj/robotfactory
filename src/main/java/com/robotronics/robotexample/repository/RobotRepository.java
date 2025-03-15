@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface RobotRepository extends JpaRepository<Robot, Long> {
     List<Robot> findByTipo(String tipo);
     List<Robot> findByAnioFabricacionBetween(Integer desde, Integer hasta);
+    boolean existsByNombre(String nombre);
 }

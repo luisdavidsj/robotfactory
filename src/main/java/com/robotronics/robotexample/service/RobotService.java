@@ -2,9 +2,11 @@ package com.robotronics.robotexample.service;
 
 import org.springframework.stereotype.Service;
 
+import com.robotronics.robotexample.dto.RobotDTO;
 import com.robotronics.robotexample.model.Robot;
 import com.robotronics.robotexample.repository.RobotRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +19,29 @@ public class RobotService {
         this.robotRepository = robotRepository;
     }
 
-    public Robot crearRobot(Robot robot) {
-        return robotRepository.save(robot);
+    public List<Robot> crearRobots(List<RobotDTO> robotDTOs) {
+        List<Robot> robotsCreados = new ArrayList<>();
+        List<String> errores = new ArrayList<>();
+
+        for (RobotDTO dto : robotDTOs) {
+            if (robotRepository.existsByNombre(dto.getNombre())) {
+                errores.add("Ya existe un robot con el nombre: " + dto.getNombre());
+                continue;
+            }
+
+            Robot robot = new Robot();
+            robot.setNombre(dto.getNombre());
+            robot.setTipo(dto.getTipo());
+            robot.setAnioFabricacion(dto.getAnioFabricacion());
+
+            robotsCreados.add(robotRepository.save(robot));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException(String.join(", ", errores));
+        }
+
+        return robotsCreados;
     }
 
     public List<Robot> obtenerTodosLosRobots() {
